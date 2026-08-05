@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quebra-cabeça das Representações de Curvas</title>
+<title>REDMAT | Quebra-cabeça das Representações de Curvas</title>
+<meta name="theme-color" content="#61ACC9">
+<meta name="description" content="Atividade interativa do REDMAT sobre conversões entre registros de representação de curvas.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FFFDEC'/%3E%3Ccircle cx='23' cy='32' r='14' fill='%2361ACC9'/%3E%3Ccircle cx='41' cy='32' r='14' fill='%23FD5151' fill-opacity='.9'/%3E%3C/svg%3E">
 <style>
 :root{
   --ink:#18212b;
@@ -417,11 +420,442 @@ button{font:inherit}
   body.printing-report .report-panel > p{display:none !important}
 }
 
+
+/* =========================================================
+   IDENTIDADE VISUAL REDMAT
+   Paleta principal:
+   Azul  #61ACC9
+   Coral #FD5151
+   Creme #FFFDEC
+   ========================================================= */
+:root{
+  --redmat-blue:#61ACC9;
+  --redmat-blue-dark:#2F718C;
+  --redmat-blue-soft:#E7F3F7;
+  --redmat-red:#FD5151;
+  --redmat-red-dark:#BD3434;
+  --redmat-red-soft:#FFE8E5;
+  --redmat-cream:#FFFDEC;
+  --redmat-ink:#173A49;
+
+  --ink:var(--redmat-ink);
+  --muted:#526B75;
+  --paper:var(--redmat-cream);
+  --panel:#FFFFFF;
+  --line:#B8D6E1;
+  --brand:var(--redmat-blue);
+  --brand-dark:var(--redmat-blue-dark);
+  --accent:var(--redmat-blue-soft);
+  --bad:var(--redmat-red-dark);
+  --bad-bg:var(--redmat-red-soft);
+  --warn:#865C16;
+  --warn-bg:#FFF4D8;
+  --shadow:0 12px 34px rgba(47,113,140,.14);
+}
+
+html{scroll-behavior:smooth}
+
+body{
+  background:
+    radial-gradient(circle at 6% 4%, rgba(97,172,201,.16) 0 95px, transparent 96px),
+    radial-gradient(circle at 96% 10%, rgba(253,81,81,.11) 0 75px, transparent 76px),
+    linear-gradient(180deg,#FFFDEC 0%,#FFF9ED 100%);
+  color:var(--redmat-ink);
+}
+
+button,
+input{
+  font-family:inherit;
+}
+
+button{
+  transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease;
+}
+
+button:hover{
+  transform:translateY(-1px);
+}
+
+button:focus-visible,
+input:focus-visible,
+.piece:focus-visible,
+.slot:focus-visible{
+  outline:4px solid rgba(253,81,81,.32);
+  outline-offset:3px;
+}
+
+.duval-app{
+  padding-top:28px;
+  padding-bottom:42px;
+}
+
+.hero{
+  position:relative;
+  overflow:hidden;
+  color:var(--redmat-ink);
+  background:
+    linear-gradient(115deg,rgba(255,253,236,.98),rgba(231,243,247,.96));
+  border:3px solid var(--redmat-blue);
+  border-top:12px solid var(--redmat-red);
+  border-radius:22px;
+  padding:27px 30px 25px;
+  box-shadow:var(--shadow);
+}
+
+.hero::before,
+.hero::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+}
+
+.hero::before{
+  width:185px;
+  height:185px;
+  right:-58px;
+  top:-72px;
+  background:rgba(97,172,201,.20);
+  border:22px solid rgba(255,253,236,.68);
+}
+
+.hero::after{
+  width:86px;
+  height:86px;
+  right:92px;
+  bottom:-53px;
+  background:rgba(253,81,81,.18);
+}
+
+.hero h1{
+  position:relative;
+  margin:10px 0 8px;
+  max-width:850px;
+  color:var(--redmat-ink);
+  letter-spacing:-.025em;
+}
+
+.hero h1::after{
+  content:"";
+  display:block;
+  width:78px;
+  height:6px;
+  margin-top:13px;
+  border-radius:999px;
+  background:var(--redmat-red);
+}
+
+.hero p{
+  position:relative;
+  color:#3C5A66;
+  font-size:1.02rem;
+}
+
+.redmat-kicker{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  flex-wrap:wrap;
+  color:var(--redmat-blue-dark);
+  font-size:.82rem;
+  font-weight:700;
+  letter-spacing:.045em;
+  text-transform:uppercase;
+}
+
+.redmat-kicker strong{
+  color:var(--redmat-red-dark);
+  font-size:.92rem;
+  letter-spacing:.085em;
+}
+
+.redmat-mark{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+}
+
+.redmat-mark i{
+  display:block;
+  width:9px;
+  height:9px;
+  border-radius:3px;
+  background:var(--redmat-blue);
+  transform:rotate(45deg);
+}
+
+.redmat-mark i:nth-child(2){
+  background:var(--redmat-red);
+}
+
+.redmat-mark i:nth-child(3){
+  background:var(--redmat-blue);
+}
+
+.student-bar{
+  position:relative;
+  border-top:1px solid rgba(47,113,140,.24);
+}
+
+.student-field input{
+  border:2px solid var(--redmat-blue);
+  background:rgba(255,255,255,.88);
+  box-shadow:0 3px 0 rgba(97,172,201,.15);
+}
+
+.student-field input::placeholder{
+  color:#718B95;
+}
+
+.level-tabs{
+  padding:5px 0 2px;
+}
+
+.level-tab{
+  border:2px solid var(--redmat-blue);
+  background:var(--redmat-cream);
+  color:var(--redmat-blue-dark);
+  box-shadow:0 4px 0 rgba(97,172,201,.18);
+}
+
+.level-tab:hover{
+  background:var(--redmat-blue-soft);
+  box-shadow:0 5px 0 rgba(97,172,201,.24);
+}
+
+.level-tab[aria-selected="true"]{
+  background:var(--redmat-blue);
+  border-color:var(--redmat-blue-dark);
+  color:var(--redmat-ink);
+  box-shadow:inset 0 -5px 0 rgba(47,113,140,.25);
+}
+
+.level-card,
+.report-panel{
+  border:1px solid rgba(97,172,201,.38);
+  border-top:7px solid var(--redmat-blue);
+  background:rgba(255,255,255,.95);
+  box-shadow:var(--shadow);
+}
+
+.level-heading h2,
+.report-panel h2{
+  color:var(--redmat-blue-dark);
+}
+
+.status{
+  color:var(--redmat-ink);
+  background:var(--redmat-blue-soft);
+  border:2px solid var(--redmat-blue);
+  box-shadow:inset 6px 0 0 var(--redmat-red);
+}
+
+.board{
+  background:var(--redmat-blue-soft);
+  border:2px solid var(--redmat-blue);
+  box-shadow:inset 0 0 0 5px rgba(255,253,236,.62);
+}
+
+.board-header{
+  color:var(--redmat-ink);
+  background:var(--redmat-blue);
+  border:2px solid var(--redmat-blue-dark);
+  border-top:7px solid var(--redmat-red);
+  box-shadow:0 4px 0 rgba(47,113,140,.18);
+}
+
+.slot{
+  background:#FFFFFF;
+  border-color:rgba(47,113,140,.55);
+}
+
+.slot.drag-over{
+  background:var(--redmat-blue-soft);
+  border-color:var(--redmat-red);
+  box-shadow:0 0 0 5px rgba(253,81,81,.13);
+}
+
+.slot .slot-number{
+  color:var(--redmat-blue-dark);
+  font-weight:700;
+}
+
+.bank-title{
+  color:var(--redmat-blue-dark);
+  font-size:1.08rem;
+}
+
+.bank-title::before{
+  content:"";
+  display:inline-block;
+  width:10px;
+  height:10px;
+  margin-right:8px;
+  border-radius:3px;
+  background:var(--redmat-red);
+  transform:rotate(45deg);
+}
+
+.bank{
+  background:
+    linear-gradient(135deg,rgba(231,243,247,.96),rgba(255,253,236,.96));
+  border:2px solid rgba(97,172,201,.62);
+}
+
+.bank-cell:empty{
+  background:rgba(255,253,236,.72);
+  border-color:rgba(97,172,201,.45);
+}
+
+.piece{
+  color:var(--redmat-ink);
+  background:linear-gradient(180deg,#FFFFFF 0%,#FFFDF5 100%);
+  border:2px solid var(--redmat-blue-dark);
+  box-shadow:0 4px 11px rgba(47,113,140,.13);
+}
+
+.piece:hover{
+  border-color:var(--redmat-red);
+  box-shadow:0 7px 16px rgba(47,113,140,.17);
+}
+
+.piece.selected{
+  outline:5px solid var(--redmat-red);
+  box-shadow:0 0 0 4px rgba(255,253,236,.95),0 8px 17px rgba(253,81,81,.19);
+}
+
+.piece .tag{
+  color:var(--redmat-red-dark);
+  font-weight:800;
+  background:var(--redmat-red-soft);
+  border-radius:999px;
+  padding:2px 6px;
+}
+
+.return-btn{
+  color:var(--redmat-blue-dark);
+  background:var(--redmat-blue-soft);
+  border:1px solid rgba(97,172,201,.55);
+}
+
+.primary{
+  color:#321010;
+  background:var(--redmat-red);
+  box-shadow:0 4px 0 var(--redmat-red-dark);
+}
+
+.primary:hover{
+  background:#FF6767;
+}
+
+.secondary{
+  color:var(--redmat-ink);
+  background:var(--redmat-blue-soft);
+  border:2px solid var(--redmat-blue);
+}
+
+.secondary:hover{
+  background:#D8EDF4;
+}
+
+.danger{
+  color:var(--redmat-red-dark);
+  background:#FFFFFF;
+  border:2px solid var(--redmat-red);
+}
+
+.controls button,
+.report-actions button{
+  min-height:43px;
+}
+
+.feedback.ok{
+  border-left:7px solid var(--redmat-blue);
+}
+
+.feedback.bad{
+  border-left:7px solid var(--redmat-red);
+}
+
+.feedback.warn{
+  border-left:7px solid #E0A12B;
+}
+
+.teacher-note{
+  background:var(--redmat-cream);
+  border:1px solid rgba(97,172,201,.52);
+}
+
+.teacher-note summary{
+  color:var(--redmat-blue-dark);
+}
+
+.report-panel{
+  border-top-color:var(--redmat-red);
+}
+
+.report-lock{
+  color:#654500;
+  background:#FFF4D8;
+  border:1px solid #E5BC5A;
+  box-shadow:inset 6px 0 0 var(--redmat-blue);
+}
+
+.report-header{
+  border-bottom-color:var(--redmat-blue);
+}
+
+.report-metric{
+  background:linear-gradient(135deg,var(--redmat-blue-soft),#FFFFFF);
+  border:1px solid rgba(97,172,201,.55);
+  border-top:5px solid var(--redmat-red);
+}
+
+.report-metric strong{
+  color:var(--redmat-blue-dark);
+}
+
+.level-report{
+  border:1px solid rgba(97,172,201,.52);
+  border-left:7px solid var(--redmat-blue);
+  background:#FFFFFF;
+}
+
+.level-report h4{
+  color:var(--redmat-blue-dark);
+}
+
+.level-report .level-feedback{
+  background:var(--redmat-blue-soft);
+  border-left:5px solid var(--redmat-red);
+}
+
+.final-feedback{
+  background:linear-gradient(135deg,var(--redmat-blue-soft),#FFFFFF);
+  border:2px solid var(--redmat-blue);
+  box-shadow:inset 7px 0 0 var(--redmat-red);
+}
+
+@media(max-width:650px){
+  .hero{
+    padding:22px 19px;
+  }
+  .redmat-kicker span:last-child{
+    width:100%;
+  }
+}
+
 </style>
 </head>
 <body>
 <main class="duval-app" id="duvalApp">
   <section class="hero">
+    <div class="redmat-kicker">
+      <span class="redmat-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+      <strong>REDMAT</strong>
+      <span>Recursos Educacionais para o Ensino e Divulgação da Matemática</span>
+    </div>
     <h1>Quebra-cabeça de curvas</h1>
     <p>
       Organize as peças para que cada linha contenha quatro representações da mesma curva.
@@ -438,16 +872,16 @@ button{font:inherit}
 "use strict";
 
 const C = {
-  axis: "#344955",
-  curve: "#0b7d83",
-  detail: "#a44324",
-  grid: "#d5dde2",
-  fill: "#dff1f2"
+  axis: "#173A49",
+  curve: "#61ACC9",
+  detail: "#FD5151",
+  grid: "#D6E8EF",
+  fill: "#FFFDEC"
 };
 
 function svgFrame(inner, label){
   return `<svg viewBox="0 0 220 130" role="img" aria-label="${label}">
-    <rect x="0" y="0" width="220" height="130" rx="9" fill="#fff"/>
+    <rect x="0" y="0" width="220" height="130" rx="9" fill="#FFFDEC"/>
     <g stroke="${C.grid}" stroke-width="1">
       <line x1="25" y1="25" x2="25" y2="112"/><line x1="62" y1="25" x2="62" y2="112"/>
       <line x1="99" y1="25" x2="99" y2="112"/><line x1="136" y1="25" x2="136" y2="112"/>
@@ -522,11 +956,11 @@ function graph(kind){
 function realLife(kind){
   if(kind==="taxi") return `
     <svg viewBox="0 0 220 120" role="img" aria-label="corrida de táxi">
-      <rect x="22" y="75" width="176" height="7" rx="3" fill="#b9c3cc"/>
+      <rect x="22" y="75" width="176" height="7" rx="3" fill="#B9D8E4"/>
       <path d="M50 70 L70 48 H145 L169 70 Z" fill="${C.fill}" stroke="${C.axis}" stroke-width="3"/>
       <rect x="91" y="38" width="35" height="12" rx="3" fill="${C.detail}"/>
-      <circle cx="76" cy="75" r="13" fill="#fff" stroke="${C.axis}" stroke-width="4"/>
-      <circle cx="153" cy="75" r="13" fill="#fff" stroke="${C.axis}" stroke-width="4"/>
+      <circle cx="76" cy="75" r="13" fill="#FFFDEC" stroke="${C.axis}" stroke-width="4"/>
+      <circle cx="153" cy="75" r="13" fill="#FFFDEC" stroke="${C.axis}" stroke-width="4"/>
       <text x="110" y="105" text-anchor="middle" font-size="14" fill="${C.axis}">taxa fixa + preço por km</text>
     </svg>`;
   if(kind==="buoy") return `
@@ -534,7 +968,7 @@ function realLife(kind){
       <path d="M10 70 Q35 48 60 70 T110 70 T160 70 T210 70" fill="none" stroke="${C.curve}" stroke-width="5"/>
       <circle cx="111" cy="57" r="17" fill="${C.detail}"/>
       <rect x="108" y="30" width="6" height="18" fill="${C.axis}"/>
-      <path d="M114 31 L143 39 L114 47 Z" fill="#f2c14e"/>
+      <path d="M114 31 L143 39 L114 47 Z" fill="#FD5151"/>
       <text x="110" y="107" text-anchor="middle" font-size="14" fill="${C.axis}">movimento periódico</text>
     </svg>`;
   return `
