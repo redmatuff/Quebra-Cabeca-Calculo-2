@@ -7,6 +7,18 @@
 <meta name="theme-color" content="#61ACC9">
 <meta name="description" content="Atividade interativa do REDMAT sobre conversões entre registros de representação de curvas.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FFFDEC'/%3E%3Ccircle cx='23' cy='32' r='14' fill='%2361ACC9'/%3E%3Ccircle cx='41' cy='32' r='14' fill='%23FD5151' fill-opacity='.9'/%3E%3C/svg%3E">
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['\\(', '\\)']],
+    displayMath: [['\\[', '\\]']],
+    processEscapes: true
+  },
+  chtml: { scale: 0.94 },
+  options: { enableMenu: false }
+};
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" id="MathJax-script"></script>
 <style>
 :root{
   --ink:#18212b;
@@ -846,6 +858,159 @@ input:focus-visible,
   }
 }
 
+
+/* ===== Atualização de aplicação: LaTeX, celular e persistência visual ===== */
+.math.latex{
+  width:100%;
+  color:var(--redmat-ink);
+}
+.math.latex mjx-container[display="true"]{
+  margin:.3rem 0 !important;
+  max-width:100%;
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding:.15rem 0;
+  font-size:105% !important;
+}
+.math.latex mjx-container{
+  color:var(--redmat-ink);
+}
+.bank-wrap{
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-inline:contain;
+  padding-bottom:6px;
+}
+.mobile-save-note{
+  margin-top:7px;
+  color:var(--muted);
+  font-size:.86rem;
+}
+.level-tab.completed::before{
+  content:"✓";
+  display:inline-grid;
+  place-items:center;
+  width:1.35rem;
+  height:1.35rem;
+  margin-right:.35rem;
+  border-radius:50%;
+  background:var(--redmat-red);
+  color:white;
+  font-size:.8rem;
+}
+.report-panel.locked{
+  display:none !important;
+}
+.report-panel.unlocked{
+  display:block;
+}
+.report-actions .share-mobile{
+  background:var(--redmat-blue);
+  border:2px solid var(--redmat-blue-dark);
+  color:var(--redmat-ink);
+}
+.report-output,
+.level-report,
+.report-metric{
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+.report-header h3{
+  overflow-wrap:anywhere;
+}
+@media(max-width:700px){
+  body{overflow-x:hidden}
+  .duval-app{
+    width:100%;
+    padding:10px;
+  }
+  .hero,
+  .level-card,
+  .report-panel{
+    border-radius:15px;
+  }
+  .level-heading{
+    display:block;
+  }
+  .status{
+    width:100%;
+    margin-top:12px;
+  }
+  .board-wrap,
+  .bank-wrap{
+    width:calc(100vw - 20px);
+    margin-left:calc(50% - 50vw + 10px);
+    padding-inline:10px;
+  }
+  .board,
+  .bank{
+    min-width:780px;
+    grid-template-columns:repeat(4,minmax(180px,1fr));
+  }
+  .board-header{
+    min-height:70px;
+    font-size:.94rem;
+  }
+  .slot,
+  .bank-cell,
+  .bank .piece{
+    min-height:150px;
+    height:150px;
+  }
+  .piece{
+    padding:10px;
+  }
+  .piece .tag{
+    font-size:.59rem;
+  }
+  .bank-help::after{
+    content:" No celular, toque primeiro na peça e depois no espaço desejado.";
+    font-weight:700;
+    color:var(--redmat-blue-dark);
+  }
+  .controls,
+  .report-actions{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .controls button,
+  .report-actions button{
+    width:100%;
+    min-height:48px;
+  }
+  .report-panel{
+    padding:15px;
+  }
+  .report-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+  }
+  .report-metric{
+    padding:10px;
+  }
+  .report-metric strong{
+    font-size:1.18rem;
+  }
+  .level-report{
+    padding:11px;
+  }
+  .level-report ul{
+    padding-left:17px;
+  }
+}
+@media(max-width:430px){
+  .report-grid{
+    grid-template-columns:1fr;
+  }
+  .hero h1{
+    font-size:1.65rem;
+  }
+  .report-header h3{
+    font-size:1.1rem;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -854,7 +1019,7 @@ input:focus-visible,
     <div class="redmat-kicker">
       <span class="redmat-mark" aria-hidden="true"><i></i><i></i><i></i></span>
       <strong>REDMAT</strong>
-      <span>Recursos Educacionais Digitais para o Ensino e Divulgação da Matemática</span>
+      <span>Registros e Educação Matemática</span>
     </div>
     <h1>Quebra-cabeça de curvas</h1>
     <p>
@@ -906,6 +1071,33 @@ function sample(fn,a,b,n=130){
   for(let i=0;i<n;i++){const x=a+(b-a)*i/(n-1);pts.push([x,fn(x)]);}
   return pts;
 }
+
+function exponentialGraph(){
+  const xMin=-2.2, xMax=1.7, yMin=0, yMax=6;
+  const left=32, right=204, top=15, bottom=106;
+  const X=x=>left+(x-xMin)/(xMax-xMin)*(right-left);
+  const Y=y=>bottom-(y-yMin)/(yMax-yMin)*(bottom-top);
+  const points=sample(x=>Math.exp(x),xMin,xMax,180);
+  const path=points.map((point,index)=>(index?"L":"M")+X(point[0]).toFixed(1)+" "+Y(point[1]).toFixed(1)).join(" ");
+  const xAxis=Y(0);
+  const yAxis=X(0);
+  const gridsX=[-2,-1,0,1].map(value=>`<line x1="${X(value)}" y1="${top}" x2="${X(value)}" y2="${bottom}"/>`).join("");
+  const gridsY=[1,2,3,4,5].map(value=>`<line x1="${left}" y1="${Y(value)}" x2="${right}" y2="${Y(value)}"/>`).join("");
+  return `<svg viewBox="0 0 220 130" role="img" aria-label="gráfico da função exponencial y igual a e elevado a x, passando pelo ponto zero um">
+    <rect width="220" height="130" rx="9" fill="#FFFDEC"/>
+    <g stroke="${C.grid}" stroke-width="1">${gridsX}${gridsY}</g>
+    <g stroke="${C.axis}" stroke-width="1.8">
+      <line x1="${left-4}" y1="${xAxis}" x2="${right+5}" y2="${xAxis}"/>
+      <line x1="${yAxis}" y1="${bottom+5}" x2="${yAxis}" y2="${top-4}"/>
+    </g>
+    <path d="${path}" fill="none" stroke="${C.curve}" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="${X(0)}" cy="${Y(1)}" r="4.5" fill="${C.detail}" stroke="#FFFDEC" stroke-width="2"/>
+    <text x="${X(0)+7}" y="${Y(1)-7}" font-size="11" font-weight="700" fill="${C.axis}">(0, 1)</text>
+    <text x="${right+4}" y="${xAxis-4}" font-size="11" fill="${C.axis}">x</text>
+    <text x="${yAxis+5}" y="${top}" font-size="11" fill="${C.axis}">y</text>
+  </svg>`;
+}
+
 function graph(kind){
   let p="", extra="", label="";
   if(kind==="line"){
@@ -915,7 +1107,7 @@ function graph(kind){
     p=pathFromPoints(sample(x=>Math.sin(x),-Math.PI*2,Math.PI*2),-Math.PI*2,Math.PI*2,-1.6,1.6); label="gráfico da função seno";
   }
   if(kind==="exp"){
-    p=pathFromPoints(sample(x=>Math.exp(x),-2.5,1.7),-2.5,1.7,-.2,6); label="gráfico da função exponencial";
+    return exponentialGraph();
   }
   if(kind==="circle"){
     label="circunferência unitária";
@@ -972,20 +1164,43 @@ function realLife(kind){
       <text x="110" y="107" text-anchor="middle" font-size="14" fill="${C.axis}">movimento periódico</text>
     </svg>`;
   return `
-    <svg viewBox="0 0 220 120" role="img" aria-label="crescimento de população">
-      <g fill="${C.curve}">
-        <circle cx="45" cy="49" r="11"/><circle cx="78" cy="47" r="11"/>
-        <circle cx="116" cy="43" r="11"/><circle cx="151" cy="36" r="11"/><circle cx="181" cy="27" r="11"/>
+    <svg viewBox="0 0 220 120" role="img" aria-label="colônia bacteriana duplicando de uma para duas, quatro e oito bactérias">
+      <text x="110" y="14" text-anchor="middle" font-size="12" font-weight="700" fill="${C.axis}">duplicação de uma colônia bacteriana</text>
+      <g fill="none" stroke="${C.grid}" stroke-width="1.5">
+        <circle cx="29" cy="57" r="23"/><circle cx="82" cy="57" r="23"/>
+        <circle cx="137" cy="57" r="23"/><circle cx="191" cy="57" r="23"/>
       </g>
-      <g stroke="${C.axis}" stroke-width="3">
-        <line x1="35" y1="61" x2="28" y2="89"/><line x1="55" y1="61" x2="63" y2="89"/>
-        <line x1="68" y1="59" x2="63" y2="89"/><line x1="88" y1="59" x2="96" y2="89"/>
-        <line x1="106" y1="55" x2="100" y2="89"/><line x1="126" y1="55" x2="132" y2="89"/>
-        <line x1="141" y1="48" x2="136" y2="89"/><line x1="161" y1="48" x2="166" y2="89"/>
-        <line x1="171" y1="39" x2="168" y2="89"/><line x1="191" y1="39" x2="196" y2="89"/>
+      <g fill="${C.curve}" stroke="${C.axis}" stroke-width="1">
+        <circle cx="29" cy="57" r="5"/>
+        <circle cx="76" cy="57" r="5"/><circle cx="88" cy="57" r="5"/>
+        <circle cx="131" cy="51" r="4.5"/><circle cx="143" cy="51" r="4.5"/>
+        <circle cx="131" cy="63" r="4.5"/><circle cx="143" cy="63" r="4.5"/>
+        <circle cx="183" cy="47" r="3.7"/><circle cx="193" cy="47" r="3.7"/>
+        <circle cx="183" cy="57" r="3.7"/><circle cx="193" cy="57" r="3.7"/>
+        <circle cx="183" cy="67" r="3.7"/><circle cx="193" cy="67" r="3.7"/>
+        <circle cx="188" cy="52" r="3.7"/><circle cx="188" cy="62" r="3.7"/>
       </g>
-      <text x="110" y="108" text-anchor="middle" font-size="14" fill="${C.axis}">crescimento contínuo idealizado</text>
+      <g fill="${C.detail}" font-size="13" font-weight="800" text-anchor="middle">
+        <text x="29" y="96">1</text><text x="82" y="96">2</text>
+        <text x="137" y="96">4</text><text x="191" y="96">8</text>
+      </g>
+      <g fill="${C.axis}" font-size="9" text-anchor="middle">
+        <text x="29" y="110">t = 0</text><text x="82" y="110">t = 1</text>
+        <text x="137" y="110">t = 2</text><text x="191" y="110">t = 3</text>
+      </g>
+      <g stroke="${C.detail}" stroke-width="2" fill="none">
+        <path d="M53 57h5l-3-3m3 3-3 3"/><path d="M106 57h5l-3-3m3 3-3 3"/>
+        <path d="M161 57h5l-3-3m3 3-3 3"/>
+      </g>
     </svg>`;
+}
+
+
+function latex(expression){
+  return `<div class="math latex">\\[${expression}\\]</div>`;
+}
+function alignedLatex(lines){
+  return latex(`\\begin{aligned}${lines.join('\\\\')}\\end{aligned}`);
 }
 
 const LEVELS = [
@@ -1003,7 +1218,7 @@ const LEVELS = [
       id:"reta", name:"Reta",
       cards:{
         lingua:`<strong>Reta crescente</strong>Inclinação 2 e interseção com o eixo <em>y</em> igual a 1.`,
-        cart:`<span class="math">y = 2x + 1</span>`,
+        cart:latex(String.raw`y = 2x + 1`),
         graf:graph("line"),
         vida:realLife("taxi")
       }
@@ -1012,7 +1227,7 @@ const LEVELS = [
       id:"seno", name:"Função seno",
       cards:{
         lingua:`<strong>Função periódica</strong>Oscila entre −1 e 1 e repete seu comportamento a cada 2π.`,
-        cart:`<span class="math">y = sen(x)</span>`,
+        cart:latex(String.raw`y = \operatorname{sen}(x)`),
         graf:graph("sine"),
         vida:realLife("buoy")
       }
@@ -1021,7 +1236,7 @@ const LEVELS = [
       id:"exp", name:"Função exponencial",
       cards:{
         lingua:`<strong>Crescimento exponencial</strong>Função positiva, passa por (0,1) e cresce cada vez mais rapidamente.`,
-        cart:`<span class="math">y = e<sup>x</sup></span>`,
+        cart:latex(String.raw`y = e^x`),
         graf:graph("exp"),
         vida:realLife("population")
       }
@@ -1043,8 +1258,8 @@ const LEVELS = [
       id:"circ", name:"Circunferência",
       cards:{
         lingua:`<strong>Circunferência</strong>Centro (0,0) e raio 1.`,
-        cart:`<span class="math">x<sup>2</sup> + y<sup>2</sup> = 1</span>`,
-        param:`<span class="math">x = cos(t)<br>y = sen(t)<br>0 ≤ t &lt; 2π</span>`,
+        cart:latex(String.raw`x^2 + y^2 = 1`),
+        param:alignedLatex([String.raw`x &= \cos(t)`, String.raw`y &= \operatorname{sen}(t)`, String.raw`0 &\le t < 2\pi`]),
         graf:graph("circle")
       }
     },
@@ -1052,8 +1267,8 @@ const LEVELS = [
       id:"elipse", name:"Elipse",
       cards:{
         lingua:`<strong>Elipse</strong>Centro (1,0), semieixo horizontal 2 e semieixo vertical 1.`,
-        cart:`<span class="math">(x − 1)<sup>2</sup>/4 + y<sup>2</sup> = 1</span>`,
-        param:`<span class="math">x = 1 + 2cos(t)<br>y = sen(t)<br>0 ≤ t &lt; 2π</span>`,
+        cart:latex(String.raw`\frac{(x-1)^2}{4} + y^2 = 1`),
+        param:alignedLatex([String.raw`x &= 1 + 2\cos(t)`, String.raw`y &= \operatorname{sen}(t)`, String.raw`0 &\le t < 2\pi`]),
         graf:graph("ellipse")
       }
     },
@@ -1061,8 +1276,8 @@ const LEVELS = [
       id:"hipv", name:"Hipérbole vertical",
       cards:{
         lingua:`<strong>Hipérbole vertical</strong>Centro (0,0), vértices (0,±1) e dois ramos, um superior e outro inferior.`,
-        cart:`<span class="math">y<sup>2</sup> − x<sup>2</sup> = 1</span>`,
-        param:`<span class="math">x = tan(t)<br>y = sec(t)<br>t ∈ (−π/2,π/2) ∪ (π/2,3π/2)</span>`,
+        cart:latex(String.raw`y^2 - x^2 = 1`),
+        param:alignedLatex([String.raw`x &= \tan(t)`, String.raw`y &= \sec(t)`, String.raw`t &\in \left(-\frac{\pi}{2},\frac{\pi}{2}\right) \cup \left(\frac{\pi}{2},\frac{3\pi}{2}\right)`]),
         graf:graph("vhyper")
       }
     }
@@ -1082,28 +1297,28 @@ const LEVELS = [
     {
       id:"hipdir", name:"Ramo direito da hipérbole",
       cards:{
-        param:`<span class="math">x = cosh(t)<br>y = senh(t)<br>t ∈ ℝ</span>`,
+        param:alignedLatex([String.raw`x &= \cosh(t)`, String.raw`y &= \operatorname{senh}(t)`, String.raw`t &\in \mathbb{R}`]),
         graf:graph("rightHyper"),
-        cart:`<span class="math">x<sup>2</sup> − y<sup>2</sup> = 1<br>x &gt; 0</span>`,
-        vet:`<span class="math"><b>r</b>(t) = ⟨cosh(t), senh(t)⟩<br>t ∈ ℝ</span>`
+        cart:alignedLatex([String.raw`x^2-y^2 &= 1`, String.raw`x &> 0`]),
+        vet:alignedLatex([String.raw`\vec r(t) &= \langle \cosh(t),\operatorname{senh}(t)\rangle`, String.raw`t &\in \mathbb{R}`])
       }
     },
     {
       id:"semicirc", name:"Semicircunferência direita",
       cards:{
-        param:`<span class="math">x = cos(t)<br>y = sen(t)<br>−π/2 ≤ t ≤ π/2</span>`,
+        param:alignedLatex([String.raw`x &= \cos(t)`, String.raw`y &= \operatorname{sen}(t)`, String.raw`-\frac{\pi}{2} &\le t \le \frac{\pi}{2}`]),
         graf:graph("rightCircle"),
-        cart:`<span class="math">x<sup>2</sup> + y<sup>2</sup> = 1<br>x ≥ 0</span>`,
-        vet:`<span class="math"><b>r</b>(t) = ⟨cos(t), sen(t)⟩<br>−π/2 ≤ t ≤ π/2</span>`
+        cart:alignedLatex([String.raw`x^2+y^2 &= 1`, String.raw`x &\ge 0`]),
+        vet:alignedLatex([String.raw`\vec r(t) &= \langle \cos(t),\operatorname{sen}(t)\rangle`, String.raw`-\frac{\pi}{2} &\le t \le \frac{\pi}{2}`])
       }
     },
     {
       id:"meiaelipse", name:"Metade inferior da elipse",
       cards:{
-        param:`<span class="math">x = 2cos(t)<br>y = sen(t)<br>π ≤ t ≤ 2π</span>`,
+        param:alignedLatex([String.raw`x &= 2\cos(t)`, String.raw`y &= \operatorname{sen}(t)`, String.raw`\pi &\le t \le 2\pi`]),
         graf:graph("lowerEllipse"),
-        cart:`<span class="math">x<sup>2</sup>/4 + y<sup>2</sup> = 1<br>y ≤ 0</span>`,
-        vet:`<span class="math"><b>r</b>(t) = ⟨2cos(t), sen(t)⟩<br>π ≤ t ≤ 2π</span>`
+        cart:alignedLatex([String.raw`\frac{x^2}{4}+y^2 &= 1`, String.raw`y &\le 0`]),
+        vet:alignedLatex([String.raw`\vec r(t) &= \langle 2\cos(t),\operatorname{sen}(t)\rangle`, String.raw`\pi &\le t \le 2\pi`])
       }
     }
   ],
@@ -1119,6 +1334,63 @@ let bankOrder=[];
 let pieceNodes=new Map();
 
 const REPORT_KEY="duvalLearningReportV3";
+
+const GAME_STATE_KEY="duvalGameStateV2";
+let levelHasRendered=false;
+
+function newGameState(){
+  return {
+    version:2,
+    currentLevel:0,
+    levels:LEVELS.map(()=>({
+      placements:Array(12).fill(null),
+      bankOrder:[],
+      checkedRows:[]
+    }))
+  };
+}
+function loadGameState(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(GAME_STATE_KEY)||"null");
+    if(saved && saved.version===2 && Array.isArray(saved.levels) && saved.levels.length===LEVELS.length){
+      return saved;
+    }
+  }catch(error){}
+  return newGameState();
+}
+let gameState=loadGameState();
+
+function saveGameState(){
+  gameState.currentLevel=levelIndex;
+  localStorage.setItem(GAME_STATE_KEY,JSON.stringify(gameState));
+}
+function saveCurrentLevelState(){
+  if(!gameState.levels[levelIndex]) return;
+  gameState.levels[levelIndex]={
+    placements:[...placements],
+    bankOrder:[...bankOrder],
+    checkedRows:checkedRows.map(row=>({...row}))
+  };
+  saveGameState();
+}
+function restoreLevelState(index){
+  const state=gameState.levels[index]||{};
+  const validIds=new Set(allCards(LEVELS[index]).map(card=>card.id));
+  const restoredPlacements=Array.isArray(state.placements) && state.placements.length===12
+    ? state.placements.map(id=>id && validIds.has(id) ? id : null)
+    : Array(12).fill(null);
+  const used=new Set();
+  placements=restoredPlacements.map(id=>{
+    if(!id || used.has(id)) return null;
+    used.add(id);
+    return id;
+  });
+  bankOrder=Array.isArray(state.bankOrder) && state.bankOrder.length===12 && state.bankOrder.every(id=>validIds.has(id))
+    ? [...state.bankOrder]
+    : [];
+  checkedRows=Array.isArray(state.checkedRows) ? state.checkedRows.map(row=>({...row})) : [];
+}
+
 
 function emptyLevelStats(){
   return {
@@ -1185,6 +1457,17 @@ function currentElapsed(index){
   return base;
 }
 
+
+function clearTypesetMath(container){
+  if(container && window.MathJax && typeof window.MathJax.typesetClear==="function"){
+    window.MathJax.typesetClear([container]);
+  }
+}
+function typesetMath(container){
+  if(!container || !window.MathJax || typeof window.MathJax.typesetPromise!=="function") return;
+  window.MathJax.typesetPromise([container]).catch(error=>console.warn("MathJax:",error));
+}
+
 function shuffle(a){
   const x=[...a];
   for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]];}
@@ -1208,24 +1491,28 @@ function allCards(level){
 }
 function cardById(id){return allCards(LEVELS[levelIndex]).find(c=>c.id===id)}
 function initLevel(index){
-  pauseActiveTimer();
-  levelIndex=index;
-  placements=Array(12).fill(null);
+  if(levelHasRendered){
+    pauseActiveTimer();
+    saveCurrentLevelState();
+  }
+  levelIndex=Math.max(0,Math.min(LEVELS.length-1,index));
   selectedCard=null;
-  checkedRows=[];
-  bankOrder=[];
+  restoreLevelState(levelIndex);
   renderTabs();
   renderGame();
+  levelHasRendered=true;
+  saveCurrentLevelState();
   startActiveTimer();
 }
 function renderTabs(){
   const nav=document.getElementById("levelTabs");
-  nav.innerHTML=LEVELS.map((l,i)=>`<button class="level-tab" type="button" data-level="${i}" aria-selected="${i===levelIndex}">${i+1}º nível</button>`).join("");
+  nav.innerHTML=LEVELS.map((l,i)=>`<button class="level-tab ${reportData.levels[i].completed?"completed":""}" type="button" data-level="${i}" aria-selected="${i===levelIndex}">${i+1}º nível</button>`).join("");
   nav.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>initLevel(Number(b.dataset.level))));
 }
 function renderGame(){
   const level=LEVELS[levelIndex];
   const area=document.getElementById("gameArea");
+  clearTypesetMath(area);
   area.innerHTML=`
     <div class="level-heading">
       <div><h2>${level.title}</h2><p>${level.description}</p></div>
@@ -1239,7 +1526,8 @@ function renderGame(){
     </div>
     <div class="bank-title">Peças embaralhadas</div>
     <div class="bank-help">Arraste uma peça ou clique nela e depois clique em uma posição do tabuleiro. A ordem das linhas é livre.</div>
-    <div class="bank" id="bank"></div>
+    <div class="mobile-save-note">Seu progresso é salvo automaticamente neste aparelho, inclusive ao trocar de nível ou recarregar a página.</div>
+    <div class="bank-wrap"><div class="bank" id="bank"></div></div>
     <div class="controls">
       <button class="primary" type="button" id="checkBtn">Verificar</button>
       <button class="secondary" type="button" id="shuffleBtn">Embaralhar novamente</button>
@@ -1251,7 +1539,7 @@ function renderGame(){
       <summary>Objetivo didático do nível</summary>
       <p>${level.explanation}</p>
     </details>`;
-  renderPieces(true);
+  renderPieces(bankOrder.length!==12);
   bindControls();
 }
 function clearRowMarks(){
@@ -1312,6 +1600,7 @@ function renderPieces(initialShuffle=false){
   applyRowMarks();
   bindDropTargets();
   syncSelectionStyles();
+  typesetMath(document.getElementById("gameArea"));
 }
 
 function makePiece(card){
@@ -1417,6 +1706,7 @@ function placeCard(id,slotIndex){
 
   selectedCard=null;
   checkedRows=[];
+  saveCurrentLevelState();
   clearRowMarks();
   syncSelectionStyles();
   clearFeedback();
@@ -1432,6 +1722,7 @@ function removeCard(id){
 
   selectedCard=null;
   checkedRows=[];
+  saveCurrentLevelState();
   clearRowMarks();
   syncSelectionStyles();
   clearFeedback();
@@ -1467,7 +1758,9 @@ function check(){
 
   bestScores[levelIndex]=stats.bestCorrect;
   saveReportData();
-  updateReportAvailability();
+  saveCurrentLevelState();
+  renderTabs();
+  updateReportAvailability(correct===3);
   document.querySelector(".status").textContent=`Melhor resultado: ${stats.bestCorrect}/3 linhas`;
 
   const fb=document.getElementById("feedback");
@@ -1496,6 +1789,11 @@ function clearFeedback(){
   if(fb){fb.className="feedback";fb.innerHTML="";}
 }
 function reset(action="reset"){
+  const message=action==="shuffle"
+    ? "Embaralhar novamente retirará todas as peças deste nível. Deseja continuar?"
+    : "Retirar todas apagará a montagem atual deste nível. Deseja continuar?";
+  if(!window.confirm(message)) return;
+
   const stats=reportData.levels[levelIndex];
   if(action==="shuffle") stats.shuffles++;
   else stats.resets++;
@@ -1506,9 +1804,11 @@ function reset(action="reset"){
   checkedRows=[];
   bankOrder=[];
   renderPieces(true);
+  saveCurrentLevelState();
   clearFeedback();
 }
 function showSolution(){
+  if(!window.confirm("A solução preencherá o tabuleiro e ficará registrada no relatório. Deseja continuar?")) return;
   const stats=reportData.levels[levelIndex];
   stats.solutionUsed=true;
   saveReportData();
@@ -1519,6 +1819,7 @@ function showSolution(){
   placements=solution;
   checkedRows=[0,1,2].map(rowResult);
   renderPieces(false);
+  saveCurrentLevelState();
 
   const fb=document.getElementById("feedback");
   fb.className="feedback show warn";
@@ -1600,20 +1901,19 @@ function overallFeedback(score,levels){
 function allLevelsCompleted(){
   return reportData.levels.every(level=>level.completed);
 }
-function updateReportAvailability(){
+function updateReportAvailability(reveal=false){
   const panel=document.getElementById("reportPanel");
-  const lock=document.getElementById("reportLock");
-  if(!panel || !lock) return;
+  if(!panel) return;
 
   if(allLevelsCompleted()){
     panel.classList.remove("locked");
     panel.classList.add("unlocked");
-    lock.textContent="Atividade concluída. O relatório de aprendizagem está liberado abaixo.";
+    panel.hidden=false;
+    if(reveal) renderReport(true);
   }else{
     panel.classList.add("locked");
     panel.classList.remove("unlocked");
-    const completed=reportData.levels.filter(level=>level.completed).length;
-    lock.textContent=`Conclua os 3 níveis para liberar o relatório final. Progresso atual: ${completed}/3 níveis concluídos.`;
+    panel.hidden=true;
   }
 }
 function ensureReportUI(){
@@ -1637,14 +1937,15 @@ function ensureReportUI(){
   const app=document.getElementById("duvalApp");
   if(app && !document.getElementById("reportPanel")){
     app.insertAdjacentHTML("beforeend",`
-      <section class="report-panel locked" id="reportPanel">
+      <section class="report-panel locked" id="reportPanel" hidden>
         <h2>Relatório de aprendizagem</h2>
         <p>O relatório reúne o melhor resultado, as verificações, os erros identificados, o tempo e o uso da solução em cada nível.</p>
-        <div class="report-lock" id="reportLock"></div>
         <div class="report-actions">
           <button class="primary" type="button" id="generateReportBtn">Gerar ou atualizar relatório</button>
           <button class="secondary" type="button" id="downloadReportBtn">Baixar relatório em TXT</button>
           <button class="secondary" type="button" id="printReportBtn">Imprimir ou salvar em PDF</button>
+          <button class="share-mobile" type="button" id="shareReportBtn">Compartilhar no telefone</button>
+          <button class="secondary" type="button" id="copyReportBtn">Copiar relatório</button>
           <button class="danger" type="button" id="newStudentBtn">Novo aluno / zerar dados</button>
         </div>
         <div class="report-output" id="reportOutput"></div>
@@ -1653,6 +1954,8 @@ function ensureReportUI(){
     document.getElementById("generateReportBtn").addEventListener("click",renderReport);
     document.getElementById("downloadReportBtn").addEventListener("click",downloadReport);
     document.getElementById("printReportBtn").addEventListener("click",printReport);
+    document.getElementById("shareReportBtn").addEventListener("click",shareReport);
+    document.getElementById("copyReportBtn").addEventListener("click",copyReport);
     document.getElementById("newStudentBtn").addEventListener("click",resetReportData);
   }
   updateReportAvailability();
@@ -1668,7 +1971,7 @@ function reportCalculations(snapshot){
   const score=Math.round(bestRows/9*100);
   return {bestRows,totalChecks,rowHits,rowErrors,moves,elapsed,completed,score};
 }
-function renderReport(){
+function renderReport(shouldScroll=true){
   if(!allLevelsCompleted()) return;
   const snapshot=snapshotReport();
   const totals=reportCalculations(snapshot);
@@ -1719,7 +2022,7 @@ function renderReport(){
     </div>`;
 
   output.classList.add("show");
-  output.scrollIntoView({behavior:"smooth",block:"start"});
+  if(shouldScroll) output.scrollIntoView({behavior:"smooth",block:"start"});
 }
 function reportAsText(){
   const snapshot=snapshotReport();
@@ -1785,6 +2088,41 @@ function downloadReport(){
   link.remove();
   setTimeout(()=>URL.revokeObjectURL(url),500);
 }
+
+async function shareReport(){
+  if(!allLevelsCompleted()) return;
+  const text=reportAsText();
+  const title=`Relatório do quebra-cabeça — ${(reportData.studentName||"Aluno").trim()||"Aluno"}`;
+  try{
+    if(navigator.share){
+      await navigator.share({title,text});
+      return;
+    }
+    await copyReport();
+    window.alert("O compartilhamento direto não está disponível neste aparelho. O relatório foi copiado.");
+  }catch(error){
+    if(error && error.name!=="AbortError") console.warn(error);
+  }
+}
+async function copyReport(){
+  if(!allLevelsCompleted()) return;
+  const text=reportAsText();
+  try{
+    await navigator.clipboard.writeText(text);
+    window.alert("Relatório copiado para a área de transferência.");
+  }catch(error){
+    const area=document.createElement("textarea");
+    area.value=text;
+    area.style.position="fixed";
+    area.style.opacity="0";
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+    window.alert("Relatório copiado para a área de transferência.");
+  }
+}
+
 function printReport(){
   if(!allLevelsCompleted()) return;
   renderReport();
@@ -1798,9 +2136,12 @@ function resetReportData(){
 
   activeLevelStartedAt=null;
   reportData=newReportData();
+  gameState=newGameState();
   bestScores=[0,0,0];
   localStorage.removeItem("duvalBestScores");
+  localStorage.removeItem(GAME_STATE_KEY);
   saveReportData();
+  saveGameState();
 
   const input=document.getElementById("studentName");
   if(input) input.value="";
@@ -1809,18 +2150,23 @@ function resetReportData(){
     output.className="report-output";
     output.innerHTML="";
   }
+  levelHasRendered=false;
   updateReportAvailability();
   initLevel(0);
 }
-window.addEventListener("beforeunload",pauseActiveTimer);
+window.addEventListener("beforeunload",()=>{saveCurrentLevelState();pauseActiveTimer();});
 document.addEventListener("visibilitychange",()=>{
-  if(document.hidden) pauseActiveTimer();
-  else if(activeLevelStartedAt===null) startActiveTimer();
+  if(document.hidden){
+    saveCurrentLevelState();
+    pauseActiveTimer();
+  }else if(activeLevelStartedAt===null){
+    startActiveTimer();
+  }
 });
 window.addEventListener("afterprint",()=>document.body.classList.remove("printing-report"));
 
 ensureReportUI();
-initLevel(0);
+initLevel(Number(gameState.currentLevel)||0);
 
 })();
 </script>
